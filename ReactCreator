@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const prompts = require('prompts');
+
+async function main() {
+  console.log('Bienvenue dans ReactCreator !');
+
+  const questions = [
+    {
+      type: 'text',
+      name: 'projectName',
+      message: 'Quel est le nom de votre projet ?'
+    },
+    {
+      type: 'select',
+      name: 'packageManager',
+      message: 'Quel gestionnaire de paquets voulez-vous utiliser ?',
+      choices: [
+        { title: 'npm', value: 'npm' },
+        { title: 'yarn', value: 'yarn' },
+        { title: 'pnpm', value: 'pnpm' }
+      ]
+    }
+  ];
+
+  const response = await prompts(questions);
+
+  console.log(`Création du projet ${response.projectName} avec ${response.packageManager}...`);
+}
+
+main().catch(console.error);
