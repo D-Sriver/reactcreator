@@ -1,31 +1,53 @@
 #!/usr/bin/env node
 
 const prompts = require('prompts');
+const languages = require('./Languages');
+const { managers } = require('./PackageManagers');
 
-async function main() {
-  console.log('Bienvenue dans ReactCreator !');
-
-  const questions = [
-    {
-      type: 'text',
-      name: 'projectName',
-      message: 'Quel est le nom de votre projet ?'
-    },
-    {
-      type: 'select',
-      name: 'packageManager',
-      message: 'Quel gestionnaire de paquets voulez-vous utiliser ?',
-      choices: [
-        { title: 'npm', value: 'npm' },
-        { title: 'yarn', value: 'yarn' },
-        { title: 'pnpm', value: 'pnpm' }
-      ]
-    }
-  ];
-
-  const response = await prompts(questions);
-
-  console.log(`Création du projet ${response.projectName} avec ${response.packageManager}...`);
+// Fonction pour créer le projet
+async function createProject(projectName, packageManager, bundler) {
+  const pm = managers[packageManager];
+  console.log(`Création du projet ${projectName} avec ${packageManager} et ${bundler}...`);
+  
+  if (bundler === 'vite') {
+    console.log(`Commande de création : ${pm.createVite} ${projectName} --template react`);
+  } else if (bundler === 'cra') {
+    console.log(`Commande de création : ${pm.run} create-react-app ${projectName}`);
+  }
+  
+  console.log(`Commande d'installation : ${pm.install}`);
+  console.log(`Commande d'exécution : ${pm.run}`);
+  // Ajoutez ici la logique pour créer le projet
 }
 
-main().catch(console.error);
+// Fonction pour choisir la langue
+async function chooseLanguage() {
+  const languageChoice = await prompts({
+    type: 'select',
+    name: 'language',
+    message: 'Choose your language / Choisissez votre langue :',
+    choices: [
+      { title: 'English', value: 'en' },
+      { title: 'Français', value: 'fr' }
+    ]
+  });
+  return languageChoice.language;
+}
+
+// Fonction principale
+async function main() {
+  try {
+    const language = await chooseLanguage();
+    const lang = languages[language];
+
+    console.log(lang.welcome);
+
+    const response = await prompts(lang.questions);
+    await createProject(response.projectName, response.packageManager, response.bundler);
+  } catch (error) {
+    console.error(languages[language].error, error);
+  }
+}
+
+// Exécution du script
+main();

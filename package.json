@@ -1,22 +1,24 @@
 {
-  "name": "reactcreator",
+  "name": "react-creator-cli",
   "version": "1.0.0",
-  "description": "CLI tool for creating React projects",
-  "main": "reactcreator",
-  "scripts": {
-    "start": "node reactcreator"
-  },
+  "description": "Un outil CLI pour créer rapidement des projets React",
+  "main": "ReactCreator",
   "bin": {
-    "reactcreator": "./reactcreator"
+    "react-creator": "./ReactCreator"
   },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "files": [
+    "ReactCreator",
+    "Languages.js",
+    "PackageManagers.js"
+  ],
   "keywords": [
     "react",
     "cli",
     "project generator"
   ],
-  "author": "Duez.s",
-  "license": "MIT",
-  "dependencies": {
-    "prompts": "^2.4.2"
-  }
+  "author": "Votre Nom",
+  "license": "MIT"
 }
