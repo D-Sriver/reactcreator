@@ -1,15 +1,15 @@
 const managers = {
-  npm: {
-    install: 'npm install',
-    run: 'npm run',
-    init: 'npm init -y',
-    createVite: 'npm create vite@latest'
-  },
   yarn: {
     install: 'yarn',
     run: 'yarn',
     init: 'yarn init -y',
     createVite: 'yarn create vite'
+  },
+  npm: {
+    install: 'npm install',
+    run: 'npm run',
+    init: 'npm init -y',
+    createVite: 'npm create vite@latest'
   },
   pnpm: {
     install: 'pnpm install',
@@ -28,8 +28,9 @@ const managers = {
 const choices = Object.keys(managers).map(key => ({ title: key, value: key }));
 
 const bundlers = [
-  { title: 'Vite', value: 'vite' },
-  { title: 'Create React App', value: 'cra' }
+  { title: 'Vite', value: 'ViteJs' },
+  { title: 'Create React App', value: 'Create React App' },
+  { title: 'Next.js', value: 'NextJs' }
 ];
 
 module.exports = {

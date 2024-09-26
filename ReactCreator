@@ -5,19 +5,21 @@ const languages = require('./Languages');
 const { managers } = require('./PackageManagers');
 
 // Fonction pour créer le projet
-async function createProject(projectName, packageManager, bundler) {
+async function createProject(projectName, packageManager, bundler, useTypeScript, lang) {
   const pm = managers[packageManager];
-  console.log(`Création du projet ${projectName} avec ${packageManager} et ${bundler}...`);
+  const typeScriptMessage = useTypeScript ? lang.withTypeScript : lang.withoutTypeScript;
+  console.log(lang.creatingProject.replace('{projectName}', projectName)
+                                  .replace('{packageManager}', packageManager)
+                                  .replace('{bundler}', bundler)
+                                  .replace('{withTypeScript}', typeScriptMessage));
   
+  let creationCommand;
   if (bundler === 'vite') {
-    console.log(`Commande de création : ${pm.createVite} ${projectName} --template react`);
+    creationCommand = `${pm.createVite} ${projectName} --template ${useTypeScript ? 'react-ts' : 'react'}`;
   } else if (bundler === 'cra') {
-    console.log(`Commande de création : ${pm.run} create-react-app ${projectName}`);
+    creationCommand = `${pm.run} create-react-app ${projectName}${useTypeScript ? ' --template typescript' : ''}`;
   }
-  
-  console.log(`Commande d'installation : ${pm.install}`);
-  console.log(`Commande d'exécution : ${pm.run}`);
-  // Ajoutez ici la logique pour créer le projet
+    // Ajoutez ici la logique pour créer le projet
 }
 
 // Fonction pour choisir la langue
@@ -42,10 +44,20 @@ async function main() {
 
     console.log(lang.welcome);
 
-    const response = await prompts(lang.questions);
-    await createProject(response.projectName, response.packageManager, response.bundler);
+    const allQuestions = [
+      ...lang.questions,
+      {
+        type: 'confirm',
+        name: 'useTypeScript',
+        message: lang.useTypeScript
+      }
+    ];
+
+    const response = await prompts(allQuestions);
+
+    await createProject(response.projectName, response.packageManager, response.bundler, response.useTypeScript, lang);
   } catch (error) {
-    console.error(languages[language].error, error);
+    console.error(lang.error, error);
   }
 }
 
