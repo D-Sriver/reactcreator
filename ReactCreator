@@ -3,9 +3,12 @@
 const prompts = require('prompts');
 const languages = require('./Languages');
 const { managers } = require('./PackageManagers');
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 // Fonction pour créer le projet
-async function createProject(projectName, packageManager, bundler, useTypeScript, lang) {
+async function createProject(projectName, packageManager, bundler, useTypeScript, framework, lang, stylingLibrary) {
   const pm = managers[packageManager];
   const typeScriptMessage = useTypeScript ? lang.withTypeScript : lang.withoutTypeScript;
   console.log(lang.creatingProject.replace('{projectName}', projectName)
@@ -14,12 +17,42 @@ async function createProject(projectName, packageManager, bundler, useTypeScript
                                   .replace('{withTypeScript}', typeScriptMessage));
   
   let creationCommand;
-  if (bundler === 'vite') {
-    creationCommand = `${pm.createVite} ${projectName} --template ${useTypeScript ? 'react-ts' : 'react'}`;
-  } else if (bundler === 'cra') {
-    creationCommand = `${pm.run} create-react-app ${projectName}${useTypeScript ? ' --template typescript' : ''}`;
+  switch(bundler) {
+    case 'vite':
+      const template = `${framework}${useTypeScript ? '-ts' : ''}`;
+      creationCommand = `${pm.createVite} ${projectName} --template ${template}`;
+      break;
+    case 'cra':
+      creationCommand = `${pm.createReactApp} ${projectName}${useTypeScript ? ' --template typescript' : ''}`;
+      break;
+    default:
+      throw new Error(lang.invalidBundler);
   }
-    // Ajoutez ici la logique pour créer le projet
+
+  try {
+    console.log(`${lang.executingCommand} ${creationCommand}`);
+    execSync(creationCommand, { stdio: 'inherit' });
+
+    // Changer le répertoire de travail vers le nouveau projet
+    process.chdir(projectName);
+
+    // Installer les dépendances si nécessaire
+    if (packageManager !== 'npm' && packageManager !== 'bun') {
+      console.log(lang.installingDependencies);
+      execSync(pm.install, { stdio: 'inherit' });
+    }
+
+    // Ajouter un script de démarrage personnalisé au package.json
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    packageJson.scripts.start = pm.run + ' start';
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+    console.log(lang.projectCreated.replace('{projectName}', projectName));
+    console.log(lang.startCommand.replace('{command}', `cd ${projectName} && ${pm.run} start`));
+  } catch (error) {
+    console.error(lang.error, error);
+  }
 }
 
 // Fonction pour choisir la langue
@@ -38,26 +71,206 @@ async function chooseLanguage() {
 
 // Fonction principale
 async function main() {
+  let lang;
   try {
     const language = await chooseLanguage();
-    const lang = languages[language];
+    lang = languages[language];
+
+    if (!lang || !lang.questions) {
+      throw new Error('Language configuration is invalid');
+    }
 
     console.log(lang.welcome);
 
     const allQuestions = [
       ...lang.questions,
       {
-        type: 'confirm',
+        type: 'select',
+        name: 'framework',
+        message: lang.chooseFramework,
+        choices: [
+          { title: 'React', value: 'react' },
+          { title: 'Vue', value: 'vue' },
+          { title: 'Preact', value: 'preact' },
+          { title: 'Lit', value: 'lit' },
+          { title: 'Svelte', value: 'svelte' },
+          { title: 'Solid', value: 'solid' },
+          { title: 'Qwik', value: 'qwik' },
+          { title: 'Vanilla', value: 'vanilla' }
+        ]
+      },
+      {
+        type: 'select',
         name: 'useTypeScript',
-        message: lang.useTypeScript
+        message: lang.useTypeScript,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'initGit',
+        message: lang.initGit,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'stateManager',
+        message: lang.chooseStateManager,
+        choices: [
+          { title: lang.none, value: 'none' },
+          { title: 'Redux', value: 'redux' },
+          { title: 'MobX', value: 'mobx' },
+          { title: 'Recoil', value: 'recoil' },
+          { title: 'Zustand', value: 'zustand' }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'stylingLibrary',
+        message: lang.chooseStylingLibrary,
+        choices: [
+          { title: lang.none, value: 'none' },
+          { title: 'Styled-components', value: 'styled-components' },
+          { title: 'Emotion', value: 'emotion' },
+          { title: 'Tailwind CSS', value: 'tailwind' },
+          { title: 'SASS', value: 'sass' },
+          { title: 'Bootstrap', value: 'bootstrap' },
+          { title: 'Pico CSS', value: 'pico' }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'setupTests',
+        message: lang.setupTests,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'setupCI',
+        message: lang.setupCI,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'setupDocker',
+        message: lang.setupDocker,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'installDevTools',
+        message: lang.installDevTools,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
+      },
+      {
+        type: 'select',
+        name: 'installReactRouter',
+        message: lang.installReactRouter,
+        choices: [
+          { title: lang.yes, value: true },
+          { title: lang.no, value: false }
+        ]
       }
     ];
 
     const response = await prompts(allQuestions);
 
-    await createProject(response.projectName, response.packageManager, response.bundler, response.useTypeScript, lang);
+    await createProject(response.projectName, response.packageManager, response.bundler, response.useTypeScript, response.framework, lang, response.stylingLibrary);
+
+    if (response.initGit) {
+      await initializeGit(lang);
+    }
+
+    // Ici, vous pouvez ajouter la logique pour gérer les nouvelles options
+    if (response.stateManager !== 'none') {
+      // Installer le gestionnaire d'état choisi
+    }
+    if (response.stylingLibrary !== 'none') {
+      // Installer la bibliothèque de styles choisie
+    }
+    if (response.setupTests) {
+      // Configurer les tests
+    }
+    if (response.setupCI) {
+      // Configurer CI
+    }
+    if (response.setupDocker) {
+      // Configurer Docker
+    }
+    if (response.installDevTools) {
+      // Installer les outils de développement
+    }
+    if (response.installReactRouter) {
+      // Installer React Router
+    }
   } catch (error) {
-    console.error(lang.error, error);
+    if (lang && lang.error) {
+      console.error(lang.error, error);
+    } else {
+      console.error("An error occurred:", error);
+    }
+  }
+}
+
+// Fonction pour installer une bibliothèque de styles
+async function installStylingLibrary(packageManager, stylingLibrary, lang) {
+  const pm = managers[packageManager];
+  let installCommand;
+
+  switch(stylingLibrary) {
+    case 'styled-components':
+      installCommand = `${pm.install} styled-components`;
+      break;
+    case 'emotion':
+      installCommand = `${pm.install} @emotion/react @emotion/styled`;
+      break;
+    case 'tailwind':
+      installCommand = `${pm.install} -D tailwindcss postcss autoprefixer`;
+      break;
+    case 'sass':
+      installCommand = `${pm.install} -D sass`;
+      break;
+    case 'bootstrap':
+      installCommand = `${pm.install} bootstrap`;
+      break;
+    case 'pico':
+      installCommand = `${pm.install} @picocss/pico`;
+      break;
+    default:
+      return; // No styling library to install
+  }
+
+  console.log(lang.installingStylingLibrary.replace('{library}', stylingLibrary));
+  execSync(installCommand, { stdio: 'inherit' });
+}
+
+// Fonction pour initialiser Git
+async function initializeGit(lang) {
+  try {
+    console.log(lang.initializingGit);
+    execSync('git init', { stdio: 'inherit' });
+    execSync('git add .', { stdio: 'inherit' });
+    execSync('git commit -m "Initial commit"', { stdio: 'inherit' });
+    console.log(lang.gitInitialized);
+  } catch (error) {
+    console.error(lang.gitInitError, error);
   }
 }
 
