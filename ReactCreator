@@ -42,7 +42,6 @@ async function createProject(projectName, packageManager, bundler, useTypeScript
 
     // Changer le répertoire de travail vers le nouveau projet
     process.chdir(projectName);
-aj
     // Installer les dépendances si nécessaire
     if (packageManager !== 'npm' && packageManager !== 'bun') {
       console.log(lang.installingDependencies);
