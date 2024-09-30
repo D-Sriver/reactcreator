@@ -82,6 +82,7 @@ async function chooseLanguage() {
 // Fonction principale
 async function main() {
   let lang;
+  let projectSummary = {};
   try {
     const language = await chooseLanguage();
     lang = languages[language];
@@ -198,11 +199,20 @@ async function main() {
 
     const response = await prompts(allQuestions);
 
-    // Si le bundler est Next.js, définir automatiquement le framework à React
-    if (response.bundler === 'next') {
-      response.framework = 'react';
-      console.log(lang.nextUsingReact);
-    }
+    projectSummary = {
+      projectName: response.projectName,
+      packageManager: response.packageManager,
+      bundler: response.bundler,
+      framework: response.bundler === 'next' ? 'React' : response.framework,
+      useTypeScript: response.useTypeScript,
+      stateManager: response.stateManager,
+      stylingLibrary: response.stylingLibrary,
+      initGit: response.initGit,
+      setupTests: response.setupTests,
+      setupCI: response.setupCI,
+      setupDocker: response.setupDocker,
+      installReactRouter: response.installReactRouter
+    };
 
     await createProject(response.projectName, response.packageManager, response.bundler, response.useTypeScript, response.framework, lang, response.stylingLibrary);
 
@@ -210,25 +220,18 @@ async function main() {
       await initializeGit(lang);
     }
 
-    // Ici, vous pouvez ajouter la logique pour gérer les nouvelles options
     if (response.stateManager !== 'none') {
-      // Installer le gestionnaire d'état choisi
+      await installStateManager(response.packageManager, response.stateManager, lang, response.projectName);
     }
+
     if (response.stylingLibrary !== 'none') {
-      // Installer la bibliothèque de styles choisie
+      await installStylingLibrary(response.packageManager, response.stylingLibrary, lang);
     }
-    if (response.setupTests) {
-      // Configurer les tests
-    }
-    if (response.setupCI) {
-      // Configurer CI
-    }
-    if (response.setupDocker) {
-      // Configurer Docker
-    }
-    if (response.installReactRouter) {
-      // Installer React Router
-    }
+
+    // Afficher le récapitulatif
+    console.log(lang.projectSummary);
+    console.log(getProjectSummary(projectSummary, lang));
+
   } catch (error) {
     if (lang && lang.error) {
       console.error(lang.error, error);
@@ -236,6 +239,44 @@ async function main() {
       console.error("An error occurred:", error);
     }
   }
+}
+
+function getProjectSummary(summary, lang) {
+  let summaryLines = [
+    lang.summaryTemplate
+      .replace('{projectName}', summary.projectName)
+      .replace('{packageManager}', summary.packageManager)
+      .replace('{bundler}', summary.bundler)
+      .replace('{framework}', summary.framework)
+      .replace('{language}', summary.useTypeScript ? 'TypeScript' : 'JavaScript')
+  ];
+
+  if (summary.stateManager !== 'none') {
+    summaryLines.push(lang.summaryStateManager.replace('{stateManager}', summary.stateManager));
+  }
+
+  if (summary.stylingLibrary !== 'none') {
+    summaryLines.push(lang.summaryStylingLibrary.replace('{stylingLibrary}', summary.stylingLibrary));
+  }
+
+  let additionalFeatures = [];
+  if (summary.initGit) additionalFeatures.push(lang.summaryGit);
+  if (summary.setupTests) additionalFeatures.push(lang.summaryTests);
+  if (summary.setupCI) additionalFeatures.push(lang.summaryCI);
+  if (summary.setupDocker) additionalFeatures.push(lang.summaryDocker);
+  if (summary.installReactRouter) additionalFeatures.push(lang.summaryReactRouter);
+
+  if (additionalFeatures.length > 0) {
+    summaryLines.push(lang.summaryAdditionalFeatures);
+    additionalFeatures.forEach(feature => {
+      summaryLines.push(feature);
+    });
+  }
+
+  summaryLines.push('');  // Ligne vide pour séparer
+  summaryLines.push(lang.startCommand.replace('{command}', `cd ${summary.projectName} && ${managers[summary.packageManager].run} start`));
+
+  return summaryLines.join('\n');
 }
 
 // Fonction pour installer une bibliothèque de styles
@@ -268,6 +309,205 @@ async function installStylingLibrary(packageManager, stylingLibrary, lang) {
 
   console.log(lang.installingStylingLibrary.replace('{library}', stylingLibrary));
   execSync(installCommand, { stdio: 'inherit' });
+}
+
+// Fonction pour installer le gestionnaire d'état
+async function installStateManager(packageManager, stateManager, lang, projectName) {
+  const pm = managers[packageManager];
+  let installCommand;
+
+  switch(stateManager) {
+    case 'redux':
+      installCommand = `${pm.install} redux react-redux @reduxjs/toolkit`;
+      break;
+    case 'mobx':
+      installCommand = `${pm.install} mobx mobx-react-lite`;
+      break;
+    case 'recoil':
+      installCommand = `${pm.install} recoil`;
+      break;
+    case 'zustand':
+      installCommand = `${pm.install} zustand`;
+      break;
+    default:
+      return; // Pas de gestionnaire d'état à installer
+  }
+
+  console.log(lang.installingStateManager.replace('{stateManager}', stateManager));
+  execSync(installCommand, { stdio: 'inherit' });
+
+  // Création des fichiers et structures nécessaires
+  const srcDir = path.join(process.cwd(), 'src');
+  
+  switch(stateManager) {
+    case 'redux':
+      const storeDir = path.join(srcDir, 'store');
+      fs.mkdirSync(storeDir, { recursive: true });
+      fs.writeFileSync(path.join(storeDir, 'index.js'), getReduxStoreContent());
+      fs.writeFileSync(path.join(srcDir, 'App.js'), getReduxAppContent(projectName));
+      break;
+    case 'mobx':
+      const storesDir = path.join(srcDir, 'stores');
+      fs.mkdirSync(storesDir, { recursive: true });
+      fs.writeFileSync(path.join(storesDir, 'counterStore.js'), getMobxStoreContent());
+      fs.writeFileSync(path.join(srcDir, 'App.js'), getMobxAppContent(projectName));
+      break;
+    case 'recoil':
+      fs.writeFileSync(path.join(srcDir, 'atoms.js'), getRecoilAtomsContent());
+      fs.writeFileSync(path.join(srcDir, 'App.js'), getRecoilAppContent(projectName));
+      break;
+    case 'zustand':
+      fs.writeFileSync(path.join(srcDir, 'store.js'), getZustandStoreContent());
+      fs.writeFileSync(path.join(srcDir, 'App.js'), getZustandAppContent(projectName));
+      break;
+  }
+
+  console.log(lang.stateManagerConfigured.replace('{stateManager}', stateManager));
+}
+
+// Fonctions pour générer le contenu des fichiers
+function getReduxStoreContent() {
+  return `
+import { configureStore } from '@reduxjs/toolkit';
+
+export const store = configureStore({
+  reducer: {},
+});
+`;
+}
+
+function getReduxAppContent(projectName) {
+  return `
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store';
+
+function App() {
+  return (
+    <Provider store={store}>
+      <div>
+        <h1>${projectName}</h1>
+        {/* Vos composants ici */}
+      </div>
+    </Provider>
+  );
+}
+
+export default App;
+`;
+}
+
+function getMobxStoreContent() {
+  return `
+import { makeAutoObservable } from "mobx"
+
+class CounterStore {
+  count = 0
+
+  constructor() {
+    makeAutoObservable(this)
+  }
+
+  increment() {
+    this.count++
+  }
+}
+
+export const counterStore = new CounterStore()
+`;
+}
+
+function getMobxAppContent(projectName) {
+  return `
+import React from 'react';
+import { observer } from "mobx-react-lite"
+import { counterStore } from './stores/counterStore';
+
+const App = observer(() => {
+  return (
+    <div>
+      <h1>${projectName}</h1>
+      <p>Count: {counterStore.count}</p>
+      <button onClick={() => counterStore.increment()}>Increment</button>
+    </div>
+  );
+})
+
+export default App;
+`;
+}
+
+function getRecoilAtomsContent() {
+  return `
+import { atom } from 'recoil';
+
+export const countState = atom({
+  key: 'countState',
+  default: 0,
+});
+`;
+}
+
+function getRecoilAppContent(projectName) {
+  return `
+import React from 'react';
+import { RecoilRoot, useRecoilState } from 'recoil';
+import { countState } from './atoms';
+
+function Counter() {
+  const [count, setCount] = useRecoilState(countState);
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <RecoilRoot>
+      <div>
+        <h1>${projectName}</h1>
+        <Counter />
+      </div>
+    </RecoilRoot>
+  );
+}
+
+export default App;
+`;
+}
+
+function getZustandStoreContent() {
+  return `
+import create from 'zustand';
+
+export const useStore = create(set => ({
+  count: 0,
+  increment: () => set(state => ({ count: state.count + 1 })),
+}));
+`;
+}
+
+function getZustandAppContent(projectName) {
+  return `
+import React from 'react';
+import { useStore } from './store';
+
+function App() {
+  const { count, increment } = useStore();
+  return (
+    <div>
+      <h1>${projectName}</h1>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+    </div>
+  );
+}
+
+export default App;
+`;
 }
 
 // Fonction pour initialiser Git
