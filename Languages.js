@@ -54,6 +54,8 @@ module.exports = {
     gitInitialized: 'Dépôt Git initialisé avec succès.',
     gitInitError: 'Erreur lors de l\'initialisation du dépôt Git :',
     finalizingProjectSetup: "Finalisation de la configuration du projet...",
+    nextOnlySupportsReact: "Next.js ne supporte que React comme framework.",
+    nextUsingReact: "Next.js utilise React par défaut.",
   },
   en: {
     welcome: 'Welcome to ReactCreator!',
@@ -108,5 +110,7 @@ module.exports = {
     gitInitialized: 'Git repository successfully initialized.',
     gitInitError: 'Error initializing Git repository:',
     finalizingProjectSetup: "Finalizing project setup...",
+    nextOnlySupportsReact: "Next.js only supports React as a framework.",
+    nextUsingReact: "Next.js uses React by default.",
   }
 };
