@@ -1,10 +1,10 @@
 {
-  "name": "react-creator-cli",
-  "version": "1.0.0",
+  "name": "@sriver/react-creator",
+  "version": "0.1.0",
   "description": "Un outil CLI pour créer rapidement des projets React",
-  "main": "ReactCreator",
+  "main": "React-Creator",
   "bin": {
-    "react-creator": "./ReactCreator"
+    "react-creator": "React-Creator"
   },
   "dependencies": {
     "prompts": "^2.4.2"

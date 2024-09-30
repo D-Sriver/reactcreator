@@ -187,15 +187,6 @@ async function main() {
       },
       {
         type: 'select',
-        name: 'installDevTools',
-        message: lang.installDevTools,
-        choices: [
-          { title: lang.yes, value: true },
-          { title: lang.no, value: false }
-        ]
-      },
-      {
-        type: 'select',
         name: 'installReactRouter',
         message: lang.installReactRouter,
         choices: [
@@ -234,9 +225,6 @@ async function main() {
     }
     if (response.setupDocker) {
       // Configurer Docker
-    }
-    if (response.installDevTools) {
-      // Installer les outils de développement
     }
     if (response.installReactRouter) {
       // Installer React Router

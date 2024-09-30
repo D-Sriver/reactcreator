@@ -23,12 +23,12 @@ En :
 ## Structure du projet
 
 fr :
-- `ReactCreator` : Le script principal qui orchestre la création du projet
+- `React-Creator` : Le script principal qui orchestre la création du projet
 - `Languages.js` : Gère les traductions et les questions pour chaque langue
 - `PackageManagers.js` : Définit les commandes pour chaque gestionnaire de paquets
 
 En :
-- `ReactCreator` : The main script that orchestrates project creation
+- `React-Creator` : The main script that orchestrates project creation
 - `Languages.js` : Manages translations and questions for each language
 - `PackageManagers.js` : Defines commands for each package manager
 
@@ -54,9 +54,11 @@ react-creator
 
 ## Contribution
 
-fr : Nous apprécions toutes les contributions ! Si vous avez des idées pour améliorer ReactCreator, veuillez ouvrir une issue ou un pull request.
+fr : Nous apprécions toutes les contributions ! 
+Si vous avez des idées pour améliorer ReactCreator, veuillez ouvrir une issue ou un pull request.
 
-En : We appreciate all contributions! If you have ideas to improve ReactCreator, please open an issue or a pull request.
+En : We appreciate all contributions! 
+If you have ideas to improve ReactCreator, please open an issue or a pull request.
 
 ## Licence
 
