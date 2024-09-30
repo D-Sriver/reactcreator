@@ -48,6 +48,10 @@ async function createProject(projectName, packageManager, bundler, useTypeScript
     packageJson.scripts.start = pm.run + ' start';
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
+    // Initialisation finale du projet
+    console.log(lang.finalizingProjectSetup);
+    execSync(`${pm.install}`, { stdio: 'inherit' });
+
     console.log(lang.projectCreated.replace('{projectName}', projectName));
     console.log(lang.startCommand.replace('{command}', `cd ${projectName} && ${pm.run} start`));
   } catch (error) {

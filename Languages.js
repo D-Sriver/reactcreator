@@ -53,6 +53,7 @@ module.exports = {
     initializingGit: 'Initialisation du dépôt Git...',
     gitInitialized: 'Dépôt Git initialisé avec succès.',
     gitInitError: 'Erreur lors de l\'initialisation du dépôt Git :',
+    finalizingProjectSetup: "Finalisation de la configuration du projet...",
   },
   en: {
     welcome: 'Welcome to ReactCreator!',
@@ -106,5 +107,6 @@ module.exports = {
     initializingGit: 'Initializing Git repository...',
     gitInitialized: 'Git repository successfully initialized.',
     gitInitError: 'Error initializing Git repository:',
+    finalizingProjectSetup: "Finalizing project setup...",
   }
 };
