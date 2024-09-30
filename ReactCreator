@@ -11,7 +11,11 @@ const path = require('path');
 async function createProject(projectName, packageManager, bundler, useTypeScript, framework, lang, stylingLibrary) {
   const pm = managers[packageManager];
   const typeScriptMessage = useTypeScript ? lang.withTypeScript : lang.withoutTypeScript;
-  console.log(lang.creatingProject.replace('{projectName}', projectName)
+  
+  // Transformer le nom du projet en minuscules pour Next.js
+  const formattedProjectName = bundler === 'next' ? projectName.toLowerCase() : projectName;
+  
+  console.log(lang.creatingProject.replace('{projectName}', formattedProjectName)
                                   .replace('{packageManager}', packageManager)
                                   .replace('{bundler}', bundler)
                                   .replace('{withTypeScript}', typeScriptMessage));
@@ -20,13 +24,13 @@ async function createProject(projectName, packageManager, bundler, useTypeScript
   switch(bundler) {
     case 'vite':
       const template = `${framework}${useTypeScript ? '-ts' : ''}`;
-      creationCommand = `${pm.createVite} ${projectName} --template ${template}`;
+      creationCommand = `${pm.createVite} ${formattedProjectName} --template ${template}`;
       break;
     case 'cra':
-      creationCommand = `${pm.createReactApp} ${projectName}${useTypeScript ? ' --template typescript' : ''}`;
+      creationCommand = `${pm.createReactApp} ${formattedProjectName}${useTypeScript ? ' --template typescript' : ''}`;
       break;
     case 'next':
-      creationCommand = `${pm.createNext} ${projectName} --js ${useTypeScript ? '--typescript' : ''} --eslint --no-tailwind --no-src-dir --app --no-import-alias`;
+      creationCommand = `${pm.createNext} ${formattedProjectName} --js ${useTypeScript ? '--typescript' : ''} --eslint --no-tailwind --no-src-dir --app --no-import-alias`;
       break;
     default:
       throw new Error(lang.invalidBundler);
