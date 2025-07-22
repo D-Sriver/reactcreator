@@ -7,6 +7,7 @@ const ProjectCreator = require('./src/ProjectCreator');
 const InstallationManager = require('./src/InstallationManager');
 const GitManager = require('./src/GitManager');
 const ProjectSummary = require('./src/ProjectSummary');
+const DesignManager = require('./src/DesignManager');
 const { version, name } = require('./src/config');
 
 /**
@@ -15,33 +16,47 @@ const { version, name } = require('./src/config');
  */
 async function main() {
   try {
-    // Affichage de la version
-    console.log(`${name} v${version} - Ready to create web projects!\n`);
+    // Clear l'écran et affichage du logo stylé
+    DesignManager.clearScreen();
+    DesignManager.displayLogo(); // Logo simplifié
+    DesignManager.displayWelcome(version);
 
     // Sélection de la langue
+    DesignManager.displayStep('Step 1/8', 'Language Selection');
     const language = await chooseLanguage();
     const lang = loadLanguage(language);
 
     console.log(lang.welcome);
 
     // Configuration du projet
+    DesignManager.displayStep('Step 2/8', 'Project Configuration');
     const config = await getProjectConfig(language, lang);
 
     // Validation de la configuration
+    DesignManager.displayStep('Step 3/8', 'Configuration Validation');
     ProjectCreator.validateConfig(config);
+    DesignManager.displaySuccess('Configuration validated successfully!');
 
     // Création du projet
+    DesignManager.displayStep('Step 4/8', 'Project Creation');
     await ProjectCreator.create(config, lang);
 
     // Installation des fonctionnalités supplémentaires
+    DesignManager.displayStep('Step 5-7/8', 'Installing Additional Features');
     await installAdditionalFeatures(config, lang);
 
-    // Affichage du résumé
+    // Affichage du résumé final
+    DesignManager.displayStep('Step 8/8', 'Project Summary');
+    DesignManager.displayFinalSummary(config);
     ProjectSummary.display(config, lang);
     ProjectSummary.displayTips(config, lang);
 
+    // Commande de démarrage
+    const startCommand = `cd ${config.projectName} && ${ProjectCreator.getStartCommand(config)}`;
+    DesignManager.displayStartCommand(startCommand);
+
   } catch (error) {
-    console.error("❌ An error occurred:", error.message);
+    DesignManager.displayError(`An error occurred: ${error.message}`);
     process.exit(1);
   }
 }
@@ -89,7 +104,7 @@ async function chooseLanguage() {
   });
   
   if (!languageChoice.language) {
-    console.log('Language selection cancelled.');
+    DesignManager.displayWarning('Language selection cancelled.');
     process.exit(0);
   }
   
@@ -108,7 +123,7 @@ async function getProjectConfig(language, lang) {
   
   // Vérifier si l'utilisateur a annulé
   if (!response.projectName) {
-    console.log(lang.cancelled);
+    DesignManager.displayWarning(lang.cancelled);
     process.exit(0);
   }
 

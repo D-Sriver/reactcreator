@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const DesignManager = require('./DesignManager');
 
 /**
  * Gestionnaire d'installations pour DevStarter
@@ -18,9 +19,9 @@ class InstallationManager {
     
     if (!installCommand) return;
 
-    console.log(lang.installingStateManager.replace('{stateManager}', stateManager));
+    DesignManager.displayInfo(lang.installingStateManager.replace('{stateManager}', stateManager));
     utils.executeCommand(installCommand);
-    console.log(lang.stateManagerConfigured.replace('{stateManager}', stateManager));
+    DesignManager.displaySuccess(lang.stateManagerConfigured.replace('{stateManager}', stateManager));
   }
 
   /**
@@ -53,7 +54,7 @@ class InstallationManager {
 
     if (!installCommand) return;
 
-    console.log(lang.installingStylingLibrary.replace('{library}', stylingLibrary));
+    DesignManager.displayInfo(lang.installingStylingLibrary.replace('{library}', stylingLibrary));
     utils.executeCommand(installCommand);
     
     // Configuration spéciale pour Tailwind CSS
@@ -89,9 +90,9 @@ class InstallationManager {
   static async configureTailwind(lang) {
     try {
       utils.executeCommand('npx tailwindcss init -p');
-      console.log(lang.tailwindConfigured || 'Tailwind CSS configuration files created.');
+      DesignManager.displaySuccess(lang.tailwindConfigured || 'Tailwind CSS configuration files created.');
     } catch (error) {
-      console.error('Error configuring Tailwind CSS:', error.message);
+      DesignManager.displayError('Error configuring Tailwind CSS: ' + error.message);
     }
   }
 
@@ -109,9 +110,9 @@ class InstallationManager {
     if (!installCommand) return;
 
     const routerName = this.getRouterDisplayName(router, lang);
-    console.log(lang.installingRouter.replace('{router}', routerName));
+    DesignManager.displayInfo(lang.installingRouter.replace('{router}', routerName));
     utils.executeCommand(installCommand);
-    console.log(lang.routerInstalled.replace('{router}', routerName));
+    DesignManager.displaySuccess(lang.routerInstalled.replace('{router}', routerName));
   }
 
   /**

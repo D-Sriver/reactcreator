@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const DesignManager = require('./DesignManager');
 
 /**
  * Gestionnaire Git pour DevStarter
@@ -10,16 +11,16 @@ class GitManager {
    */
   static async initialize(lang) {
     try {
-      console.log(lang.initializingGit);
+      DesignManager.displayInfo(lang.initializingGit);
       
       utils.executeCommand('git init');
       utils.executeCommand('git add .');
       utils.executeCommand('git commit -m "Initial commit"');
       
-      console.log(lang.gitInitialized);
+      DesignManager.displaySuccess(lang.gitInitialized);
       return true;
     } catch (error) {
-      console.error(lang.gitInitError, error.message);
+      DesignManager.displayError(lang.gitInitError + ': ' + error.message);
       return false;
     }
   }
@@ -43,9 +44,9 @@ class GitManager {
     
     try {
       fs.writeFileSync('.gitignore', gitignoreContent);
-      console.log('Custom .gitignore created');
+      DesignManager.displaySuccess('Custom .gitignore created');
     } catch (error) {
-      console.error('Error creating .gitignore:', error.message);
+      DesignManager.displayError('Error creating .gitignore: ' + error.message);
     }
   }
 

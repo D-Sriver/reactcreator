@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const DesignManager = require('./DesignManager');
 
 /**
  * Gestionnaire de création de projets pour DevStarter
@@ -15,7 +16,7 @@ class ProjectCreator {
     const { managers } = require('../PackageManagers');
     const pm = managers[packageManager];
     
-    console.log(lang.creatingProject
+    DesignManager.displayInfo(lang.creatingProject
       .replace('{projectName}', projectName)
       .replace('{packageManager}', packageManager)
       .replace('{bundler}', bundler)
@@ -31,11 +32,11 @@ class ProjectCreator {
     
     // Installation des dépendances si nécessaire
     if (packageManager !== 'npm' && packageManager !== 'bun') {
-      console.log(lang.installingDependencies);
+      DesignManager.displayInfo(lang.installingDependencies);
       utils.executeCommand(pm.install);
     }
 
-    console.log(lang.projectCreated.replace('{projectName}', projectName));
+    DesignManager.displaySuccess(lang.projectCreated.replace('{projectName}', projectName));
   }
 
   /**
