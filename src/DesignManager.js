@@ -20,14 +20,20 @@ class DesignManager {
    */
   static displayLogo() {
     console.log('');
-    console.log(chalk.hex(this.colors.secondary).bold('  ██████╗ ███████╗██╗   ██╗███████╗████████╗ █████╗ ██████╗ ████████╗███████╗██████╗ '));
-    console.log(chalk.hex(this.colors.secondary).bold('  ██╔══██╗██╔════╝██║   ██║██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██╔══██╗'));
-    console.log(chalk.hex(this.colors.secondary).bold('  ██║  ██║█████╗  ██║   ██║███████╗   ██║   ███████║██████╔╝   ██║   █████╗  ██████╔╝'));
-    console.log(chalk.hex(this.colors.secondary).bold('  ██║  ██║██╔══╝  ╚██╗ ██╔╝╚════██║   ██║   ██╔══██║██╔══██╗   ██║   ██╔══╝  ██╔══██╗'));
-    console.log(chalk.hex(this.colors.secondary).bold('  ██████╔╝███████╗ ╚████╔╝ ███████║   ██║   ██║  ██║██║  ██║   ██║   ███████╗██║  ██║'));
-    console.log(chalk.hex(this.colors.secondary).bold('  ╚═════╝ ╚══════╝  ╚═══╝  ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝'));
+    
+    // Texte "DEVSTARTER" en gros avec des couleurs alternées
+    const letters = 'DEVSTARTER'.split('');
+    const colors = [this.colors.primary, this.colors.secondary, this.colors.success, this.colors.warning, this.colors.error, this.colors.info];
+    
+    let logoLine = '    ';
+    letters.forEach((letter, index) => {
+      const color = colors[index % colors.length];
+      logoLine += chalk.hex(color).bold(letter + ' ');
+    });
+    
+    console.log(logoLine);
     console.log('');
-    console.log(chalk.hex(this.colors.success)('                    🚀 Multi-Framework Project Generator 🚀'));
+    console.log(chalk.hex(this.colors.muted)('                🚀 Multi-Framework Project Generator'));
     console.log('');
   }
 
@@ -93,6 +99,15 @@ class DesignManager {
     console.log(`\n  ${chalk.hex(this.colors.primary).bold('Project:')} ${chalk.hex(this.colors.text).bold(config.projectName)}`);
     console.log(`  ${chalk.hex(this.colors.primary).bold('Framework:')} ${chalk.hex(this.colors.text).bold(config.framework)}`);
     console.log(`  ${chalk.hex(this.colors.primary).bold('Package Manager:')} ${chalk.hex(this.colors.text).bold(config.packageManager)}`);
+    console.log('');
+  }
+
+  /**
+   * Affiche la commande de démarrage
+   */
+  static displayStartCommand(command) {
+    console.log(`\n  ${chalk.hex(this.colors.success).bold('🚀 Get started with:')}`);
+    console.log(`  ${chalk.bgHex(this.colors.secondary).hex(this.colors.text).bold(` ${command} `)}`);
     console.log('');
   }
 

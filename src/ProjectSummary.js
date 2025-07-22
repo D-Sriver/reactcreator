@@ -43,11 +43,6 @@ class ProjectSummary {
     sections.push(lang.commandsTitle || '🚀 Commands:');
     sections.push(this.getCommandsSection(config, lang));
 
-    // Section des prochaines étapes
-    sections.push('');
-    sections.push(lang.nextStepsTitle || '📋 Next Steps:');
-    sections.push(this.getNextStepsSection(config, lang));
-
     return sections.join('\n');
   }
 
@@ -119,11 +114,6 @@ class ProjectSummary {
    */
   static getNextStepsSection(config, lang) {
     const steps = [];
-
-    // Étapes de base
-    steps.push(`  1. ${lang.stepNavigate || 'Navigate to your project directory'}`);
-    steps.push(`  2. ${lang.stepInstall || 'Install dependencies if needed'}`);
-    steps.push(`  3. ${lang.stepStart || 'Start the development server'}`);
 
     // Étapes spécifiques aux fonctionnalités
     if (config.router && config.router !== 'none') {
