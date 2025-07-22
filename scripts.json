@@ -1,7 +1,0 @@
-{
-  "scripts": {
-    "start": "node React-Creator",
-    "test": "echo \"React Creator v0.2.0 - Ready to create React projects!\"",
-    "demo": "echo \"Run 'npm start' to launch ReactCreator\""
-  }
-}

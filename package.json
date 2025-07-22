@@ -11,7 +11,13 @@
   },
   "scripts": {
     "start": "node DevStarter",
-    "test": "echo \"DevStarter v0.3.0 - Ready to create web projects!\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run tests/Integration.test.js",
+    "test:unit": "vitest run tests/DesignManager.test.js tests/PackageManagers.test.js",
+    "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-results.xml",
     "demo": "echo \"Run 'npm start' to launch DevStarter\""
   },
   "dependencies": {
@@ -45,5 +51,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/D-Sriver/reactcreator.git"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "execa": "^9.6.0",
+    "tmp-promise": "^3.0.3",
+    "vitest": "^3.2.4"
   }
 }

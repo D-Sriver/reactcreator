@@ -36,7 +36,7 @@ const managers = {
 const choices = Object.keys(managers).map(key => ({ title: key, value: key }));
 
 const bundlers = [
-  { title: 'Create React App', value: 'cra' },
+  { title: 'Create React App (deprecated)', value: 'cra' },
   { title: 'Vite', value: 'vite' },
   { title: 'Next.js', value: 'next' }
 ];
