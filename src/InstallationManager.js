@@ -73,7 +73,7 @@ class InstallationManager {
     const commands = {
       'styled-components': `${pm.install} styled-components`,
       'emotion': `${pm.install} @emotion/react @emotion/styled`,
-      'tailwind': `${pm.install} -D tailwindcss postcss autoprefixer`,
+      'tailwind': `${pm.install} -D tailwindcss@next`,
       'sass': `${pm.install} -D sass`,
       'bootstrap': `${pm.install} bootstrap`,
       'pico': `${pm.install} @picocss/pico`,
@@ -89,8 +89,21 @@ class InstallationManager {
    */
   static async configureTailwind(lang) {
     try {
-      utils.executeCommand('npx tailwindcss init -p');
-      DesignManager.displaySuccess(lang.tailwindConfigured || 'Tailwind CSS configuration files created.');
+      // Pour Tailwind CSS 4.x, pas besoin de npx tailwindcss init
+      // On crée directement le fichier de configuration minimal
+      const fs = require('fs');
+      const path = require('path');
+      
+      // Créer un fichier CSS avec @import pour Tailwind 4.x
+      const cssContent = `@import "tailwindcss";
+
+/* Your custom styles here */
+`;
+      
+      // Écrire le fichier CSS
+      fs.writeFileSync(path.join(process.cwd(), 'src', 'index.css'), cssContent);
+      
+      DesignManager.displaySuccess(lang.tailwindConfigured || 'Tailwind CSS configuration created.');
     } catch (error) {
       DesignManager.displayError('Error configuring Tailwind CSS: ' + error.message);
     }
