@@ -1,142 +1,95 @@
 const { choices, bundlers } = require('./PackageManagers');
+const path = require('path');
+
+// Charger les fichiers de langue
+const loadLanguage = (lang) => {
+  try {
+    return require(path.join(__dirname, 'locales', `${lang}.js`));
+  } catch (error) {
+    console.error(`Language file for '${lang}' not found, falling back to English.`);
+    return require(path.join(__dirname, 'locales', 'en.js'));
+  }
+};
+
+// Générer les questions pour une langue donnée
+const generateQuestions = (lang) => {
+  const translations = loadLanguage(lang);
+  
+  return [
+    {
+      type: 'text',
+      name: 'projectName',
+      message: translations.questions.projectName,
+      validate: (name) => /^[a-zA-Z0-9-_]+$/.test(name) || translations.validation.projectName
+    },
+    {
+      type: 'select',
+      name: 'packageManager',
+      message: translations.questions.packageManager,
+      choices
+    },
+    {
+      type: 'select',
+      name: 'bundler',
+      message: translations.questions.bundler,
+      choices: bundlers
+    },
+    {
+      type: (prev, values) => values.bundler === 'next' ? null : 'select',
+      name: 'framework',
+      message: translations.questions.framework,
+      choices: Object.entries(translations.options.frameworks).map(([value, title]) => ({
+        title,
+        value
+      }))
+    },
+    {
+      type: 'toggle',
+      name: 'useTypeScript',
+      message: translations.questions.useTypeScript,
+      initial: false,
+      active: translations.options.yes,
+      inactive: translations.options.no
+    },
+    {
+      type: 'select',
+      name: 'stateManager',
+      message: translations.questions.stateManager,
+      choices: Object.entries(translations.options.stateManagers).map(([value, title]) => ({
+        title,
+        value
+      }))
+    },
+    {
+      type: 'select',
+      name: 'stylingLibrary',
+      message: translations.questions.stylingLibrary,
+      choices: Object.entries(translations.options.stylingLibraries).map(([value, title]) => ({
+        title,
+        value
+      }))
+    },
+    {
+      type: 'toggle',
+      name: 'initGit',
+      message: translations.questions.initGit,
+      initial: true,
+      active: translations.options.yes,
+      inactive: translations.options.no
+    },
+    {
+      type: (prev, values) => values.framework === 'react' || values.bundler === 'next' ? 'select' : null,
+      name: 'router',
+      message: translations.questions.router,
+      choices: Object.entries(translations.options.routers).map(([value, title]) => ({
+        title,
+        value
+      }))
+    }
+  ];
+};
 
 module.exports = {
-  fr: {
-    welcome: 'Bienvenue dans ReactCreator !',
-    error: 'Une erreur est survenue :',
-    useTypeScript: 'Voulez-vous utiliser TypeScript ?',
-    creatingProject: 'Création du projet {projectName} avec {packageManager} et {bundler}{withTypeScript}...',
-    invalidProjectName: 'Le nom du projet ne doit contenir que des lettres, des chiffres, des tirets et des underscores.',
-    withTypeScript: ' en utilisant TypeScript',
-    withoutTypeScript: ' sans TypeScript',
-    questions: [
-      {
-        type: 'text',
-        name: 'projectName',
-        message: 'Quel est le nom de votre projet ?',
-        validate: (name) => /^[a-zA-Z0-9-_]+$/.test(name) || 'Le nom du projet ne doit contenir que des lettres, des chiffres, des tirets et des underscores.'
-      },
-      {
-        type: 'select',
-        name: 'packageManager',
-        message: 'Quel gestionnaire de paquets voulez-vous utiliser ?',
-        choices
-      },
-      {
-        type: 'select',
-        name: 'bundler',
-        message: 'Quel bundler voulez-vous utiliser ?',
-        choices: bundlers
-      }
-    ],
-    installingDependencies: 'Installation des dépendances...',
-    projectCreated: 'Projet {projectName} créé avec succès !',
-    startCommand: 'Commande de démarrage : {command}',
-    additionalPrompts: 'Des invites supplémentaires peuvent apparaître. Veuillez sélectionner React et TypeScript si demandé.',
-    selectingReact: 'Sélection automatique de React...',
-    selectingTypeScript: 'Sélection automatique de TypeScript...',
-    chooseFramework: 'Quel framework voulez-vous utiliser ?',
-    initGit: 'Voulez-vous initialiser un dépôt Git ?',
-    chooseStateManager: 'Quel gestionnaire d\'état voulez-vous utiliser ?',
-    chooseStylingLibrary: 'Quelle bibliothèque de styles voulez-vous installer ?',
-    setupTests: 'Voulez-vous générer une structure de base pour les tests ?',
-    setupCI: 'Voulez-vous générer des fichiers de configuration pour CI (GitHub Actions) ?',
-    setupDocker: 'Voulez-vous configurer un environnement Docker ?',
-    installReactRouter: 'Voulez-vous installer React Router Dom ?',
-    yes: 'Oui',
-    no: 'Non',
-    none: 'Aucun',
-    installingStylingLibrary: 'Installation de la bibliothèque de styles {library}...',
-    invalidBundler: 'Bundler non valide sélectionné.',
-    executingCommand: 'Exécution de la commande :',
-    initializingGit: 'Initialisation du dépôt Git...',
-    gitInitialized: 'Dépôt Git initialisé avec succès.',
-    gitInitError: 'Erreur lors de l\'initialisation du dépôt Git :',
-    finalizingProjectSetup: "Finalisation de la configuration du projet...",
-    nextOnlySupportsReact: "Next.js ne supporte que React comme framework.",
-    nextUsingReact: "Next.js utilise React par défaut.",
-    installingStateManager: 'Installation du gestionnaire d\'état {stateManager}...',
-    stateManagerConfigSteps: 'Étapes de configuration du gestionnaire d\'état :',
-    stateManagerConfigured: 'Le gestionnaire d\'état {stateManager} a été configuré avec succès.',
-    projectSummary: '\n=== Récapitulatif du projet ===',
-    summaryTemplate: 'Projet : {projectName}\nGestionnaire de paquets : {packageManager}\nBundler : {bundler}\nFramework : {framework}\nLangage : {language}',
-    summaryStateManager: 'Gestionnaire d\'état : {stateManager}',
-    summaryStylingLibrary: 'Bibliothèque de styles : {stylingLibrary}',
-    summaryAdditionalFeatures: 'Fonctionnalités additionnelles :',
-    summaryGit: '- Dépôt Git initialisé et premier commit effectué',
-    summaryTests: '- Structure de tests générée (à configurer)',
-    summaryCI: '- Fichier de configuration CI créé (à personnaliser)',
-    summaryDocker: '- Fichiers Docker générés (à configurer)',
-    summaryReactRouter: '- React Router Dom installé (à configurer dans votre application)',
-    startCommand: 'Commande de démarrage : {command}',
-  },
-  en: {
-    welcome: 'Welcome to ReactCreator!',
-    error: 'An error occurred:',
-    useTypeScript: 'Do you want to use TypeScript?',
-    creatingProject: 'Creating project {projectName} with {packageManager} and {bundler}{withTypeScript}...',
-    invalidProjectName: 'The project name should only contain letters, numbers, hyphens, and underscores.',
-    withTypeScript: ' using TypeScript',
-    withoutTypeScript: ' without TypeScript',
-    questions: [
-      {
-        type: 'text',
-        name: 'projectName',
-        message: 'What is the name of your project?',
-        validate: (name) => /^[a-zA-Z0-9-_]+$/.test(name) || 'The project name should only contain letters, numbers, hyphens, and underscores.'
-      },
-      {
-        type: 'select',
-        name: 'packageManager',
-        message: 'Which package manager do you want to use?',
-        choices
-      },
-      {
-        type: 'select',
-        name: 'bundler',
-        message: 'Which bundler do you want to use?',
-        choices: bundlers
-      }
-    ],
-    installingDependencies: 'Installing dependencies...',
-    projectCreated: 'Project {projectName} created successfully!',
-    startCommand: 'Start command: {command}',
-    additionalPrompts: 'Additional prompts may appear. Please select React and TypeScript if prompted.',
-    selectingReact: 'Automatically selecting React...',
-    selectingTypeScript: 'Automatically selecting TypeScript...',
-    chooseFramework: 'Which framework do you want to use?',
-    initGit: 'Do you want to initialize a Git repository?',
-    chooseStateManager: 'Which state manager do you want to use?',
-    chooseStylingLibrary: 'Which styling library do you want to install?',
-    setupTests: 'Do you want to generate a basic structure for tests?',
-    setupCI: 'Do you want to generate configuration files for CI (GitHub Actions)?',
-    setupDocker: 'Do you want to configure a Docker environment?',
-    installReactRouter: 'Do you want to install React Router Dom?',
-    yes: 'Yes',
-    no: 'No',
-    none: 'None',
-    installingStylingLibrary: 'Installing styling library {library}...',
-    invalidBundler: 'Invalid bundler selected.',
-    executingCommand: 'Executing command:',
-    initializingGit: 'Initializing Git repository...',
-    gitInitialized: 'Git repository successfully initialized.',
-    gitInitError: 'Error initializing Git repository:',
-    finalizingProjectSetup: "Finalizing project setup...",
-    nextOnlySupportsReact: "Next.js only supports React as a framework.",
-    nextUsingReact: "Next.js uses React by default.",
-    installingStateManager: 'Installing state manager {stateManager}...',
-    stateManagerConfigSteps: 'State manager configuration steps:',
-    stateManagerConfigured: 'The state manager {stateManager} has been successfully configured.',
-    projectSummary: '\n=== Project Summary ===',
-    summaryTemplate: 'Project: {projectName}\nPackage Manager: {packageManager}\nBundler: {bundler}\nFramework: {framework}\nLanguage: {language}',
-    summaryStateManager: 'State manager: {stateManager}',
-    summaryStylingLibrary: 'Styling library: {stylingLibrary}',
-    summaryAdditionalFeatures: 'Additional features:',
-    summaryGit: '- Git repository initialized and first commit made',
-    summaryTests: '- Test structure generated (to be configured)',
-    summaryCI: '- CI configuration file created (to be customized)',
-    summaryDocker: '- Docker files generated (to be configured)',
-    summaryReactRouter: '- React Router Dom installed (to be configured in your application)',
-    startCommand: 'Start command: {command}',
-  }
+  loadLanguage,
+  generateQuestions
 };

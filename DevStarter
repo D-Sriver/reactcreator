@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+
+const prompts = require('prompts');
+const { loadLanguage, generateQuestions } = require('./Languages');
+const utils = require('./src/utils');
+const ProjectCreator = require('./src/ProjectCreator');
+const InstallationManager = require('./src/InstallationManager');
+const GitManager = require('./src/GitManager');
+const ProjectSummary = require('./src/ProjectSummary');
+const { version, name } = require('./src/config');
+
+/**
+ * DevStarter - Générateur de projets web multi-frameworks
+ * Point d'entrée principal qui orchestre la création de projets
+ */
+async function main() {
+  try {
+    // Affichage de la version
+    console.log(`${name} v${version} - Ready to create web projects!\n`);
+
+    // Sélection de la langue
+    const language = await chooseLanguage();
+    const lang = loadLanguage(language);
+
+    console.log(lang.welcome);
+
+    // Configuration du projet
+    const config = await getProjectConfig(language, lang);
+
+    // Validation de la configuration
+    ProjectCreator.validateConfig(config);
+
+    // Création du projet
+    await ProjectCreator.create(config, lang);
+
+    // Installation des fonctionnalités supplémentaires
+    await installAdditionalFeatures(config, lang);
+
+    // Affichage du résumé
+    ProjectSummary.display(config, lang);
+    ProjectSummary.displayTips(config, lang);
+
+  } catch (error) {
+    console.error("❌ An error occurred:", error.message);
+    process.exit(1);
+  }
+}
+
+/**
+ * Installe les fonctionnalités supplémentaires
+ * @param {object} config - Configuration du projet
+ * @param {object} lang - Objet de traduction
+ */
+async function installAdditionalFeatures(config, lang) {
+  // Initialisation de Git
+  if (config.initGit && GitManager.isAvailable()) {
+    await GitManager.initialize(lang);
+  }
+
+  // Installation du gestionnaire d'état
+  if (config.stateManager !== 'none') {
+    await InstallationManager.installStateManager(config, lang);
+  }
+
+  // Installation de la bibliothèque de style
+  if (config.stylingLibrary !== 'none') {
+    await InstallationManager.installStylingLibrary(config, lang);
+  }
+
+  // Installation du router
+  if (config.router && config.router !== 'none') {
+    await InstallationManager.installRouter(config, lang);
+  }
+}
+
+/**
+ * Choix de la langue d'interface
+ * @returns {string} Code de langue choisi
+ */
+async function chooseLanguage() {
+  const languageChoice = await prompts({
+    type: 'select',
+    name: 'language',
+    message: 'Choose your language / Choisissez votre langue :',
+    choices: [
+      { title: 'English', value: 'en' },
+      { title: 'Français', value: 'fr' }
+    ]
+  });
+  
+  if (!languageChoice.language) {
+    console.log('Language selection cancelled.');
+    process.exit(0);
+  }
+  
+  return languageChoice.language;
+}
+
+/**
+ * Collecte la configuration du projet via les prompts
+ * @param {string} language - Code de langue choisi
+ * @param {object} lang - Objet de traduction
+ * @returns {object} Configuration du projet
+ */
+async function getProjectConfig(language, lang) {
+  const questions = generateQuestions(language);
+  const response = await prompts(questions);
+  
+  // Vérifier si l'utilisateur a annulé
+  if (!response.projectName) {
+    console.log(lang.cancelled);
+    process.exit(0);
+  }
+
+  return {
+    projectName: utils.formatProjectName(response.projectName),
+    packageManager: response.packageManager,
+    bundler: response.bundler,
+    framework: response.bundler === 'next' ? 'react' : response.framework,
+    useTypeScript: response.useTypeScript,
+    stateManager: response.stateManager,
+    stylingLibrary: response.stylingLibrary,
+    initGit: response.initGit,
+    router: response.router
+  };
+}
+
+// Exécution du script principal
+main();

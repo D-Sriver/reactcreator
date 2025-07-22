@@ -1,65 +1,60 @@
-# ReactCreator
-Fr : ReactCreator est un outil CLI (Command Line Interface) conçu pour créer rapidement des projets React avec différentes configurations.
+# DevStarter
 
-En : ReactCreator is a CLI (Command Line Interface) tool designed to quickly create React projects with various configurations.
+**Français** : DevStarter est un outil CLI (Command Line Interface) conçu pour créer rapidement des projets web avec différents frameworks et configurations.
 
-## Description
+**English** : DevStarter is a CLI (Command Line Interface) tool designed to quickly create web projects with various frameworks and configurations.
 
-Fr : Cet outil permet aux développeurs de générer facilement des projets React en choisissant leur gestionnaire de paquets préféré et leur bundler. Il supporte plusieurs langues pour une meilleure accessibilité.
+## 🚀 Fonctionnalités / Features
 
-En : This tool allows developers to easily generate React projects by choosing their preferred package manager and bundler. It supports multiple languages for better accessibility.
-
-## Fonctionnalités principales
-fr :
-- Création rapide de projets React
-- Support multilingue (actuellement français et anglais)
+**Français :**
+- Création rapide de projets web
+- Support multilingue (français et anglais)
 - Choix du gestionnaire de paquets (npm, yarn, pnpm, bun)
+- Choix du bundler (Create React App, Vite, Next.js)
+- Support TypeScript
+- Installation de gestionnaires d'état (Redux, MobX, Recoil, Zustand)
+- Installation de bibliothèques de styles (Styled-components, Emotion, Tailwind, SASS, Bootstrap, Pico CSS)
+- **Nouvelles options de routage** (React Router, TanStack Router, Wouter, Hookrouter)
+- Initialisation Git automatique
 
-En :
-- Quick project creation
-- Multilingual support (currently English and French)
+**English :**
+- Quick web project creation
+- Multilingual support (French and English)
+- Multi-framework support (React, Vue, Svelte, Solid, Qwik, etc.)
 - Choice of package manager (npm, yarn, pnpm, bun)
+- Choice of bundler (Create React App, Vite, Next.js)
+- TypeScript support
+- State manager installation (Redux, MobX, Recoil, Zustand)
+- Styling library installation (Styled-components, Emotion, Tailwind, SASS, Bootstrap, Pico CSS)
+- **New routing options** (React Router, TanStack Router, Wouter, Hookrouter)
+- Automatic Git initialization
 
-## Structure du projet
-
-fr :
-- `React-Creator` : Le script principal qui orchestre la création du projet
-- `Languages.js` : Gère les traductions et les questions pour chaque langue
-- `PackageManagers.js` : Définit les commandes pour chaque gestionnaire de paquets
-
-En :
-- `React-Creator` : The main script that orchestrates project creation
-- `Languages.js` : Manages translations and questions for each language
-- `PackageManagers.js` : Defines commands for each package manager
-
-## Installation
-
-fr : Pour installer ReactCreator globalement, utilisez la commande suivante :
-
-En : To install ReactCreator globally, use the following command:
+## 📦 Installation
 
 ```bash
-npm install -g react-creator
+npm install -g @sriver/devstarter
 ```
 
-## Utilisation
-
-fr : Pour utiliser ReactCreator, exécutez la commande suivante :
-
-En : To use ReactCreator, run the following command:
+## 🛠️ Utilisation / Usage
 
 ```bash
-react-creator
+devstarter
 ```
 
-## Contribution
+Le script vous guidera à travers un processus interactif pour configurer votre projet.
+The script will guide you through an interactive process to configure your project.
 
-fr : Nous apprécions toutes les contributions ! 
-Si vous avez des idées pour améliorer ReactCreator, veuillez ouvrir une issue ou un pull request.
+## 🏗️ Structure du projet / Project Structure
 
-En : We appreciate all contributions! 
-If you have ideas to improve ReactCreator, please open an issue or a pull request.
+- `DevStarter` : Script principal / Main script
+- `Languages.js` : Gestions des langues / Language management
+- `PackageManagers.js` : Configuration des gestionnaires de paquets / Package manager configuration
 
-## Licence
+## 🤝 Contribution
 
-ReactCreator is under the MIT license.
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou un pull request.
+Contributions are welcome! Feel free to open an issue or a pull request.
+
+## 📄 Licence / License
+
+MIT License
