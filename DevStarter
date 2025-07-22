@@ -2,7 +2,7 @@
 
 const prompts = require('prompts');
 const { loadLanguage, generateQuestions } = require('./Languages');
-const utils = require('./src/utils');
+const { utils } = require('./src');
 const ProjectCreator = require('./src/ProjectCreator');
 const InstallationManager = require('./src/InstallationManager');
 const GitManager = require('./src/GitManager');
@@ -128,7 +128,7 @@ async function getProjectConfig(language, lang) {
   }
 
   return {
-    projectName: utils.formatProjectName(response.projectName),
+    projectName: utils.sanitizeProjectName(response.projectName),
     packageManager: response.packageManager,
     bundler: response.bundler,
     framework: response.bundler === 'next' ? 'react' : response.framework,

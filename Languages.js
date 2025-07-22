@@ -22,13 +22,20 @@ const generateQuestions = (lang) => {
   const availablePackageManagers = getAvailablePackageManagerChoices();
   const preferredPackageManager = detectPreferredPackageManager();
   
-  // Message informatif sur les package managers détectés
+  // Message informatif sur les package managers détectés (sans imposer de choix)
   if (availablePackageManagers.length > 1) {
     console.log(`🔍 Package managers détectés: ${availablePackageManagers.map(pm => pm.value).join(', ')}`);
-    console.log(`💡 Recommandé: ${preferredPackageManager} (basé sur les fichiers existants)`);
+  } else if (availablePackageManagers.length === 1) {
+    console.log(`📦 Package manager disponible: ${availablePackageManagers[0].value}`);
   }
   
   return [
+    {
+      type: 'select',
+      name: 'packageManager',
+      message: translations.questions.packageManager,
+      choices: availablePackageManagers
+    },
     {
       type: 'text',
       name: 'projectName',
@@ -45,13 +52,6 @@ const generateQuestions = (lang) => {
         
         return `${errorMsg}${suggestion}`;
       }
-    },
-    {
-      type: 'select',
-      name: 'packageManager',
-      message: `${translations.questions.packageManager} ${availablePackageManagers.length > 1 ? `(${preferredPackageManager} recommandé)` : ''}`,
-      choices: availablePackageManagers,
-      initial: availablePackageManagers.findIndex(pm => pm.value === preferredPackageManager) || 0
     },
     {
       type: 'select',

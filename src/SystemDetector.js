@@ -59,10 +59,10 @@ class SystemDetector {
     }
     
     const titles = {
-      npm: 'npm (Node Package Manager)',
-      yarn: 'Yarn (Facebook Package Manager)', 
-      pnpm: 'pnpm (Performant npm)',
-      bun: 'Bun (All-in-one JavaScript runtime)'
+      npm: 'npm',
+      yarn: 'Yarn',
+      pnpm: 'pnpm',
+      bun: 'Bun'
     };
     
     return available.map(pm => ({

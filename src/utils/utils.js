@@ -3,6 +3,55 @@
  * Fonctions d'aide et helpers communs
  */
 
+const { execSync } = require('child_process');
+
+/**
+ * Exécute une commande système de manière synchrone
+ * @param {string} command - Commande à exécuter
+ * @param {Object} options - Options pour execSync
+ * @returns {string|null} - Sortie de la commande ou null en cas d'erreur
+ */
+function executeCommand(command, options = {}) {
+  const defaultOptions = {
+    stdio: 'inherit',
+    encoding: 'utf8',
+    ...options
+  };
+  
+  try {
+    const result = execSync(command, defaultOptions);
+    return result;
+  } catch (error) {
+    console.error(`Erreur lors de l'exécution de la commande: ${command}`);
+    console.error(error.message);
+    return null;
+  }
+}
+
+/**
+ * Vérifie si une commande existe sur le système
+ * @param {string} command - Commande à vérifier
+ * @returns {boolean} - True si la commande existe
+ */
+function commandExists(command) {
+  try {
+    const checkCommand = process.platform === 'win32' ? 'where' : 'which';
+    execSync(`${checkCommand} ${command}`, { stdio: 'ignore' });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Formate un nom de projet (alias pour sanitizeProjectName)
+ * @param {string} name - Nom à formater
+ * @returns {string} - Nom formaté
+ */
+function formatProjectName(name) {
+  return sanitizeProjectName(name);
+}
+
 /**
  * Valide si une chaîne est un nom de projet valide
  * @param {string} name - Nom du projet à valider
@@ -162,6 +211,9 @@ function isValidUrl(url) {
 }
 
 module.exports = {
+  executeCommand,
+  commandExists,
+  formatProjectName,
   isValidProjectName,
   sanitizeProjectName,
   generateUniqueName,
