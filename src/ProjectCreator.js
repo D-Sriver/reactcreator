@@ -1,5 +1,6 @@
-const utils = require('./utils');
+const utils = require('./utils/utils');
 const DesignManager = require('./DesignManager');
+const { managers } = require('../PackageManagers');
 
 /**
  * Gestionnaire de création de projets pour DevStarter
@@ -42,11 +43,15 @@ class ProjectCreator {
   /**
    * Génère la commande de création de projet
    * @param {object} config - Configuration du projet
-   * @param {object} pm - Objet package manager
    * @returns {string} Commande de création
    */
-  static getCreationCommand(config, pm) {
-    const { bundler, useTypeScript, framework, projectName } = config;
+  static getCreationCommand(config) {
+    const { bundler, useTypeScript, framework, projectName, packageManager } = config;
+    
+    const pm = managers[packageManager];
+    if (!pm) {
+      throw new Error(`Package manager not found: ${packageManager}`);
+    }
     
     const commands = {
       'vite': `${pm.createVite} ${projectName} --template ${framework}${useTypeScript ? '-ts' : ''}`,

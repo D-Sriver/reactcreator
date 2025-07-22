@@ -28,11 +28,11 @@ describe('DevStarter CLI Integration Tests', () => {
       const InstallationManager = require('../src/InstallationManager.js')
       const GitManager = require('../src/GitManager.js')
 
-      // Vérifier que les modules exportent des objets/classes
-      expect(typeof DesignManager).toBe('object')
-      expect(typeof ProjectCreator).toBe('object')
-      expect(typeof InstallationManager).toBe('object')
-      expect(typeof GitManager).toBe('object')
+      // Vérifier que les modules exportent des objets/classes (function en JavaScript pour les classes)
+      expect(typeof DesignManager === 'function' || typeof DesignManager === 'object').toBe(true)
+      expect(typeof ProjectCreator === 'function' || typeof ProjectCreator === 'object').toBe(true)
+      expect(typeof InstallationManager === 'function' || typeof InstallationManager === 'object').toBe(true)
+      expect(typeof GitManager === 'function' || typeof GitManager === 'object').toBe(true)
     })
   })
 

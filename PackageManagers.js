@@ -1,13 +1,9 @@
+const SystemDetector = require('./src/SystemDetector');
+
 const managers = {
-  yarn: {
-    install: 'yarn',
-    run: 'yarn',
-    init: 'yarn init -y',
-    createVite: 'yarn create vite',
-    createReactApp: 'yarn create react-app',
-    createNext: 'yarn create next-app'
-  },
   npm: {
+    name: 'npm',
+    lockFile: 'package-lock.json',
     install: 'npm install',
     run: 'npm run',
     init: 'npm init -y',
@@ -15,7 +11,19 @@ const managers = {
     createReactApp: 'npx create-react-app',
     createNext: 'npx create-next-app'
   },
+  yarn: {
+    name: 'yarn',
+    lockFile: 'yarn.lock',
+    install: 'yarn',
+    run: 'yarn',
+    init: 'yarn init -y',
+    createVite: 'yarn create vite',
+    createReactApp: 'yarn create react-app',
+    createNext: 'yarn create next-app'
+  },
   pnpm: {
+    name: 'pnpm',
+    lockFile: 'pnpm-lock.yaml',
     install: 'pnpm install',
     run: 'pnpm',
     init: 'pnpm init',
@@ -24,6 +32,8 @@ const managers = {
     createNext: 'pnpm create next-app'
   },
   bun: {
+    name: 'bun',
+    lockFile: 'bun.lockb',
     install: 'bun install',
     run: 'bun run',
     init: 'bun init',
@@ -33,16 +43,39 @@ const managers = {
   }
 };
 
-const choices = Object.keys(managers).map(key => ({ title: key, value: key }));
-
+// Configuration des bundlers disponibles
 const bundlers = [
   { title: 'Create React App (deprecated)', value: 'cra' },
   { title: 'Vite', value: 'vite' },
   { title: 'Next.js', value: 'next' }
 ];
 
+// Wrapper functions pour utiliser SystemDetector avec l'ancienne API
+function detectAvailablePackageManagers() {
+  return SystemDetector.detectAvailablePackageManagers();
+}
+
+function getAvailablePackageManagerChoices() {
+  return SystemDetector.getAvailablePackageManagerChoices();
+}
+
+function detectPreferredPackageManager() {
+  return SystemDetector.detectPreferredPackageManager();
+}
+
+function isCommandAvailable(command) {
+  return SystemDetector.isCommandAvailable(command);
+}
+
+// Générer les choix basés sur les package managers disponibles
+const choices = getAvailablePackageManagerChoices();
+
 module.exports = {
   managers,
   choices,
-  bundlers
+  bundlers,
+  detectAvailablePackageManagers,
+  getAvailablePackageManagerChoices,
+  detectPreferredPackageManager,
+  isCommandAvailable
 };

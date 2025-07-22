@@ -1,4 +1,5 @@
-const utils = require('./utils');
+const utils = require('./utils/utils');
+const SystemDetector = require('./SystemDetector');
 const DesignManager = require('./DesignManager');
 
 /**
@@ -30,7 +31,7 @@ class GitManager {
    * @returns {boolean} True si Git est disponible
    */
   static isAvailable() {
-    return utils.commandExists('git');
+    return SystemDetector.isGitAvailable();
   }
 
   /**

@@ -1,4 +1,7 @@
-const { choices, bundlers } = require('./PackageManagers');
+const { managers, bundlers, getAvailablePackageManagerChoices, detectPreferredPackageManager } = require('./PackageManagers');
+const SystemDetector = require('./src/SystemDetector');
+const ValidatorManager = require('./src/ValidatorManager');
+const { isValidProjectName } = require('./src/utils/utils');
 const path = require('path');
 
 // Charger les fichiers de langue
@@ -15,18 +18,40 @@ const loadLanguage = (lang) => {
 const generateQuestions = (lang) => {
   const translations = loadLanguage(lang);
   
+  // Obtenir les choix de package managers disponibles dynamiquement
+  const availablePackageManagers = getAvailablePackageManagerChoices();
+  const preferredPackageManager = detectPreferredPackageManager();
+  
+  // Message informatif sur les package managers détectés
+  if (availablePackageManagers.length > 1) {
+    console.log(`🔍 Package managers détectés: ${availablePackageManagers.map(pm => pm.value).join(', ')}`);
+    console.log(`💡 Recommandé: ${preferredPackageManager} (basé sur les fichiers existants)`);
+  }
+  
   return [
     {
       type: 'text',
       name: 'projectName',
       message: translations.questions.projectName,
-      validate: (name) => /^[a-zA-Z0-9-_]+$/.test(name) || translations.validation.projectName
+      validate: (name) => {
+        const validation = ValidatorManager.validateProjectName(name);
+        if (validation.isValid) {
+          return true;
+        }
+        
+        const errorMsg = validation.errors.join(', ');
+        const suggestion = validation.suggestions.length > 0 ? 
+          ` Suggestions: ${validation.suggestions.slice(0, 2).join(', ')}` : '';
+        
+        return `${errorMsg}${suggestion}`;
+      }
     },
     {
       type: 'select',
       name: 'packageManager',
-      message: translations.questions.packageManager,
-      choices
+      message: `${translations.questions.packageManager} ${availablePackageManagers.length > 1 ? `(${preferredPackageManager} recommandé)` : ''}`,
+      choices: availablePackageManagers,
+      initial: availablePackageManagers.findIndex(pm => pm.value === preferredPackageManager) || 0
     },
     {
       type: 'select',
