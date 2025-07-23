@@ -1,6 +1,6 @@
 {
   "name": "@sriver/devstarter",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Un outil CLI pour créer rapidement des projets web avec différents frameworks",
   "main": "DevStarter",
   "bin": {
