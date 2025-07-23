@@ -38,7 +38,7 @@ npm install -g @sriver/devstarter
 ## 🛠️ Utilisation / Usage
 
 ```bash
-devstarter
+npm start
 ```
 
 Le script vous guidera à travers un processus interactif pour configurer votre projet.

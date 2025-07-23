@@ -4,7 +4,7 @@
   "description": "Un outil CLI pour créer rapidement des projets web avec différents frameworks",
   "main": "DevStarter",
   "bin": {
-    "devstarter": "./DevStarter"
+    "devstarter": "DevStarter"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -50,7 +50,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/D-Sriver/reactcreator.git"
+    "url": "git+https://github.com/D-Sriver/reactcreator.git"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^3.2.4",
