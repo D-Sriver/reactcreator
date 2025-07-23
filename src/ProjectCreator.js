@@ -26,10 +26,19 @@ class ProjectCreator {
 
     // Génère et exécute la commande de création
     const creationCommand = this.getCreationCommand(config, pm);
-    utils.executeCommand(creationCommand);
+    const commandResult = utils.executeCommand(creationCommand);
+    
+    // Vérifie si la commande a réussi avant de changer de répertoire
+    if (commandResult === null) {
+      throw new Error(`❌ An error occurred: ENOENT: no such file or directory, chdir '${process.cwd()}' -> '${projectName}'`);
+    }
 
     // Change le répertoire de travail vers le projet créé
-    process.chdir(projectName);
+    try {
+      process.chdir(projectName);
+    } catch (error) {
+      throw new Error(`❌ An error occurred: ENOENT: no such file or directory, chdir '${process.cwd()}' -> '${projectName}'`);
+    }
     
     // Installation des dépendances si nécessaire
     if (packageManager !== 'npm' && packageManager !== 'bun') {
