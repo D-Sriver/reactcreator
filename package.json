@@ -29,6 +29,7 @@
     "DevStarter",
     "Languages.js",
     "PackageManagers.js",
+    "src/",
     "locales/",
     "README.md",
     "ROUTING_OPTIONS.md"
