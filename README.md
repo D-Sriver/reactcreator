@@ -37,8 +37,13 @@ npm install -g @sriver/devstarter
 
 ## 🛠️ Utilisation / Usage
 
+Dans le dossier ou vous voulez crée votre projet, exécutez la commande suivante :
+In the folder where you want to create your project, run the following command:
+
 ```bash
-npm start
+devstarter
+# or
+npx @sriver/devstarter
 ```
 
 Le script vous guidera à travers un processus interactif pour configurer votre projet.
